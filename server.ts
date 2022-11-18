@@ -1,7 +1,7 @@
 import App from "./src/app";
 import { db } from "./src/config/databaseConnection";
 
-const port = 4001;
+const port = 8005;
 
 (async () => {
   try {

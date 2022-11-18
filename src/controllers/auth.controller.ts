@@ -38,23 +38,40 @@ class AuthController {
       expiresIn: 6000,
     });
 
-    /*
-    CREATE TABLE users(
-        id int NOT NULL AUTO_INCREMENT,
-        name varchar(50) NOT NULL,
-        password varchar(11) NOT NULL,
-        cpf varchar(11) NOT NULL,
-        PRIMARY KEY(id),
-        UNIQUE (cpf)
-    );
-    */
-
     res.status(200).json({ token });
   }
 
   public async register(req: Request, res: Response): Promise<void> {
     const dataRegister: UserModel = req.body;
-    // const error
+
+    const passwordIsValid =
+      dataRegister && dataRegister.password && dataRegister.password.length > 0;
+    const nameIsValid =
+      dataRegister && dataRegister.name && dataRegister.name.length > 0;
+    const cpfIsValid =
+      dataRegister && dataRegister.cpf && isValidCPF(dataRegister.cpf);
+
+    if (!(passwordIsValid && nameIsValid && cpfIsValid)) {
+      res.status(400).json({
+        message: "failed registration, invalid data",
+      });
+    }
+
+    const query = `
+        INSERT INTO users(name, password, cpf) 
+        VALUES ("${dataRegister.name}","${dataRegister.password}","${dataRegister.cpf}");
+    `;
+
+    try {
+      const data = await db.query(query);
+      if (data) {
+        res
+          .status(200)
+          .send(`User ${dataRegister.name} registered with success`);
+      }
+    } catch (error) {
+      res.status(400).send(`User already registered`);
+    }
   }
 }
 
