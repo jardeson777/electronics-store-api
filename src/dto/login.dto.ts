@@ -1,4 +1,4 @@
-export type LoginTDO = {
+export type LoginDTO = {
   cpf: string;
   password: string;
 };
