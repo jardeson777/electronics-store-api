@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { db } from "../config/databaseConnection";
+import { SECRETE } from "../constants";
 import { LoginDTO } from "../dto/login.dto";
 import { UserModel } from "../models/user.model";
 import { isValidCPF } from "../utils/validationCpf";
 
-const SECRETE = "123";
 class AuthController {
   public async login(req: Request, res: Response): Promise<void> {
     const dataLogin: LoginDTO = req.body;
