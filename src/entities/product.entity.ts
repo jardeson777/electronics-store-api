@@ -1,7 +1,7 @@
 import { DataTypes } from "sequelize";
 import { db } from "../config/databaseConnection";
 
-class ProductEntitie {
+class ProductEntity {
   private entitie = db.define("product", {
     id: {
       type: DataTypes.INTEGER,
@@ -31,4 +31,4 @@ class ProductEntitie {
   }
 }
 
-export default new ProductEntitie().get();
+export default new ProductEntity().get();
