@@ -6,5 +6,6 @@ const ProductRouter = express.Router();
 
 ProductRouter.get("/products", validateSession, productController.getAll);
 ProductRouter.post("/product", validateSession, productController.setProduct);
+ProductRouter.get("/product/:id", validateSession, productController.getById);
 
 export default ProductRouter;
