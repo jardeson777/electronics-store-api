@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import { db } from "../config/databaseConnection";
 import { SECRETE } from "../constants";
 import { LoginDTO } from "../dto/login.dto";
+import userEntity from "../entities/user.entity";
 import { UserModel } from "../models/user.model";
 import { isValidCPF } from "../utils/validationCpf";
 
@@ -23,22 +24,27 @@ class AuthController {
       });
     }
 
-    const query = `
-        SELECT * FROM users
-        WHERE 
-            cpf = "${dataLogin.cpf}"
-            AND 
-            password = "${dataLogin.password}";
-    `;
+    try {
+      const data = await userEntity.findOne({
+        where: {
+          cpf: dataLogin.cpf,
+          password: dataLogin.password,
+        },
+      });
 
-    const data = await db.query(query);
-    const user: UserModel = data[0][0] as UserModel;
+      if (data) {
+        const token = jwt.sign({ userId: data.dataValues.id }, SECRETE, {
+          expiresIn: 6000,
+        });
 
-    const token = jwt.sign({ userId: user.id }, SECRETE, {
-      expiresIn: 6000,
-    });
+        res.status(200).json({ token });
+        return;
+      }
 
-    res.status(200).json({ token });
+      throw new Error("Failed login");
+    } catch (error) {
+      res.status(400).json({ message: "Failed login" });
+    }
   }
 
   public async register(req: Request, res: Response): Promise<void> {
@@ -57,20 +63,20 @@ class AuthController {
       });
     }
 
-    const query = `
-        INSERT INTO users(name, password, cpf) 
-        VALUES ("${dataRegister.name}","${dataRegister.password}","${dataRegister.cpf}");
-    `;
-
     try {
-      const data = await db.query(query);
-      if (data) {
+      const dbResult = await userEntity.create({
+        name: dataRegister.name,
+        cpf: dataRegister.cpf,
+        password: dataRegister.password,
+      });
+
+      if (dbResult.dataValues) {
         res
           .status(200)
           .send(`User ${dataRegister.name} registered with success`);
       }
     } catch (error) {
-      res.status(400).send(`User already registered`);
+      res.status(400).send(`User ${dataRegister.cpf} already registered`);
     }
   }
 }

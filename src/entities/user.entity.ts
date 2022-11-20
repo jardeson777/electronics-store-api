@@ -1,8 +1,8 @@
 import { DataTypes } from "sequelize";
 import { db } from "../config/databaseConnection";
 
-class ProductEntity {
-  private entitie = db.define("products", {
+class UserEntity {
+  private entitie = db.define("users", {
     id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
@@ -12,12 +12,13 @@ class ProductEntity {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    price: {
-      type: DataTypes.INTEGER,
+    cpf: {
+      type: DataTypes.STRING(11),
       allowNull: false,
+      unique: true,
     },
-    amount: {
-      type: DataTypes.INTEGER,
+    password: {
+      type: DataTypes.STRING,
       allowNull: false,
     },
   });
@@ -31,4 +32,4 @@ class ProductEntity {
   }
 }
 
-export default new ProductEntity().get();
+export default new UserEntity().get();
