@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import { db } from "../config/databaseConnection";
 import { SECRETE } from "../constants";
 import { LoginDTO } from "../dto/login.dto";
 import userEntity from "../entities/user.entity";
