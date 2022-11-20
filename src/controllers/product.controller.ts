@@ -17,7 +17,7 @@ class ProductController {
       });
       res.status(200).json(dataValues);
     } catch (error) {
-      res.status(400).json({ message: "Product not found" });
+      res.status(404).json({ message: "Product not found" });
     }
   }
 
@@ -31,6 +31,35 @@ class ProductController {
       .catch(() => {
         res.status(400).send("Product not added");
       });
+  }
+
+  public async editProduct(req: Request, res: Response) {
+    const product: ProductModel = req.body;
+    const { id } = req.params;
+
+    try {
+      const dbResponse = await ProductEntity.update(
+        {
+          name: product.name,
+          price: product.price,
+          amount: product.amount,
+        },
+        {
+          where: {
+            id,
+          },
+        },
+      );
+
+      if (dbResponse[0]) {
+        res.status(200).send("Product updated with success");
+        return;
+      }
+
+      res.status(400).send("Product not changed");
+    } catch (error) {
+      res.status(400).send("Product not changed");
+    }
   }
 }
 
