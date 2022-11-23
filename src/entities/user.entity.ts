@@ -1,5 +1,6 @@
 import { DataTypes } from "sequelize";
 import { db } from "../config/databaseConnection";
+import typeUserEntity from "./typeUser.entity";
 
 class UserEntity {
   private entitie = db.define("users", {
@@ -21,10 +22,18 @@ class UserEntity {
       type: DataTypes.STRING,
       allowNull: false,
     },
+    type: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: typeUserEntity,
+        key: "id",
+      },
+    },
   });
 
   constructor() {
     this.entitie.sync();
+    typeUserEntity.sync();
   }
 
   public get() {

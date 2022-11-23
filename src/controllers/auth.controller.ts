@@ -5,6 +5,9 @@ import { LoginDTO } from "../dto/login.dto";
 import userEntity from "../entities/user.entity";
 import { UserModel } from "../models/user.model";
 import { isValidCPF } from "../utils/validationCpf";
+import TypeUserEntity from "../entities/typeUser.entity";
+import { TypeUserModel } from "../models/typeUser.model";
+import { cleaningCpf } from "../utils/cleaningCpf";
 
 class AuthController {
   public async login(req: Request, res: Response): Promise<void> {
@@ -55,18 +58,23 @@ class AuthController {
       dataRegister && dataRegister.name && dataRegister.name.length > 0;
     const cpfIsValid =
       dataRegister && dataRegister.cpf && isValidCPF(dataRegister.cpf);
+    const typeIsValid =
+      dataRegister && dataRegister.type && dataRegister.type > 0;
 
-    if (!(passwordIsValid && nameIsValid && cpfIsValid)) {
+    if (!(passwordIsValid && nameIsValid && cpfIsValid && typeIsValid)) {
       res.status(400).json({
         message: "failed registration, invalid data",
       });
     }
 
+    const cpf = cleaningCpf(dataRegister.cpf);
+
     try {
       const dbResult = await userEntity.create({
         name: dataRegister.name,
-        cpf: dataRegister.cpf,
+        cpf,
         password: dataRegister.password,
+        type: dataRegister.type,
       });
 
       if (dbResult.dataValues) {
@@ -75,7 +83,7 @@ class AuthController {
           .send(`User ${dataRegister.name} registered with success`);
       }
     } catch (error) {
-      res.status(400).send(`User ${dataRegister.cpf} already registered`);
+      res.status(400).send(`User not registered`);
     }
   }
 }

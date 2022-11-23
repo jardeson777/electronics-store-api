@@ -3,4 +3,5 @@ export type UserModel = {
   name: string;
   cpf: string;
   password: string;
+  type: number;
 };
